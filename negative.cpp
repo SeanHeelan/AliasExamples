@@ -4,6 +4,8 @@
 #include <vector>
 #include <cstdint>
 
+#include "aetypes.h"
+
 // From https://travisdowns.github.io/blog/2019/08/26/vector-inc.html
 // No aliasing issues as the vector is of type uint32_t
 void vector32_inc(std::vector<uint32_t>& v) {
@@ -42,5 +44,18 @@ void write2d_noalias(char **buf, size_t x, size_t y) {
         for (size_t j = 0; j < x; ++j) {
             tmp[j] = 0;
         }
+    }
+}
+
+// This function is different to its variant in the positive examples in that the 
+// write through the character pointer has been lifted out of the loop. As a result, 
+// the compiler can generate code to load the int pointer once, then produce an optimised
+// loop body.
+void write_through_struct_noalias(char *buf, PointerHolder *ptr, int y, size_t cnt)
+{
+    *(ptr->x) = 0;
+    buf[0] = 'A';
+    for (size_t i = 0; i < cnt; ++i) {        
+        *(ptr->x) += i;
     }
 }
