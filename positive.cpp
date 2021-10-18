@@ -15,6 +15,14 @@ void vector8_inc(std::vector<uint8_t> &v)
     }
 }
 
+// As above, but char
+void vector8_inc(std::vector<char> &v)
+{
+    for (size_t i = 0; i < v.size(); i++) {
+        v[i] = (char)((uint8_t)v[i] + 1);
+    }
+}
+
 // Inspired by K2 src/isa/ebpf/inst_var.cc
 // https://github.com/SeanHeelan/superopt/blob/407eb410466e1a21d081e96cc803ea6a59aa7e7e/src/isa/ebpf/inst_var.cc#L1251
 void init_safety_chk(const std::vector<uint8_t> &reg_in, std::vector<uint8_t> &reg_out)
