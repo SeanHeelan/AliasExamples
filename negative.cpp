@@ -58,3 +58,13 @@ void write_through_struct_noalias(char *buf, PointerHolder *ptr, int y, size_t c
         *(ptr->x) += i;
     }
 }
+
+// Differs from its counterpart in positive.cpp for the same reason as
+// write_through_struct_noalias.
+void write_to_int_in_mem_noalias(char *buf, IntHolder *ptr, int y, size_t cnt) {
+    ptr->x = 0;
+    buf[0] = 'A';
+    for (size_t i = 0; i < cnt; ++i) {
+        ptr->x += i;
+    }
+}

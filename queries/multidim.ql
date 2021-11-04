@@ -3,7 +3,9 @@
 //
 // We determine if an expression will load a pointer from memory by looking for:
 // * Multi-dimensional array accesses
-// * Use of STL containers
+// * Use of STL container functions that are typically inlined and that
+//    access memory (e.g. vector.size())
+// * A load of anything inside a loop from memory (that is then used)
 import cpp
 
 // True if the expression writes to a character type
