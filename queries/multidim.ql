@@ -28,14 +28,20 @@ predicate isInLoopBody(Expr e) {
 predicate isForLoopUpdate(Expr e) { exists(ForStmt f | f.getUpdate() = e) }
 
 // True if e is a multi-dimensional array access expression
-predicate isMultiDimensionalArrayAccess(ArrayExpr a) { exists(ArrayExpr b | a.getArrayBase() = b) }
+predicate isMultiDimensionalArrayAccess(ArrayExpr a) {
+  // a is an multi-dim access if its base expression is an array expression
+  exists(ArrayExpr b | a.getArrayBase() = b)
+}
 
 // True if the loop within which the write takes place is the same loop as the access loop,
 // or is nested within it.
 predicate writeLoopWithinAccessLoop(Expr access, Expr write) {
   exists(Loop accessLoop, Loop writeLoop |
+    // The access is in a loop
     access.getEnclosingStmt().getParentStmt*() = accessLoop.getStmt() and
+    // The write is in a loop
     write.getEnclosingStmt().getParentStmt*() = writeLoop.getStmt() and
+    // The loop containing the access subsumes the loop containing the write
     accessLoop.getStmt() = writeLoop.getEnclosingStmt().getParentStmt*()
   )
 }
