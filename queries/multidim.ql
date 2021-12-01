@@ -51,11 +51,21 @@ predicate writeLoopWithinAccessLoop(Expr access, Expr write) {
   )
 }
 
-from Expr e, Expr d
+predicate isPointerFieldAccess(Expr e) { exists(PointerFieldAccess p | p = e.(PointerFieldAccess)) }
+
+from Expr w, Expr a
 where
   (
-    isCharWriteExpr(e) and
-    (isInLoopBody(e) or isForLoopUpdate(e)) and
-    (isMultiDimensionalArrayAccess(d) and writeLoopWithinAccessLoop(d, e))
+    // Write conditions
+    isCharWriteExpr(w) and
+    (isInLoopBody(w) or isForLoopUpdate(w)) and
+    // Access conditions
+    (
+      isMultiDimensionalArrayAccess(a) or
+      isPointerFieldAccess(a)
+    ) and
+    // Write and access are in the same loop, or write loop is nested within
+    // the access loop
+    writeLoopWithinAccessLoop(a, w)
   )
-select e, d, "Write through AT in loop"
+select w, a, "Write through AT in loop"
