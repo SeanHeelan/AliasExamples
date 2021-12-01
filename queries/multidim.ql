@@ -44,7 +44,10 @@ predicate writeLoopWithinAccessLoop(Expr access, Expr write) {
     // The write is in a loop
     write.getEnclosingStmt().getParentStmt*() = writeLoop.getStmt() and
     // The loop containing the access subsumes the loop containing the write
-    accessLoop.getStmt() = writeLoop.getEnclosingStmt().getParentStmt*()
+    (
+      accessLoop.getStmt() = writeLoop.getStmt() or
+      accessLoop.getStmt() = writeLoop.getEnclosingStmt().getParentStmt*()
+    )
   )
 }
 
