@@ -2,9 +2,11 @@
 // that force the compiler to generate extra loads from memory.
 
 #include <stddef.h>
+#include <stdio.h>
 
 #include <cstdint>
 #include <vector>
+
 
 #include "aetypes.h"
 
@@ -66,5 +68,18 @@ void write_to_int_in_mem_noalias(char *buf, IntHolder *ptr, int y, size_t cnt) {
     buf[0] = 'A';
     for (size_t i = 0; i < cnt; ++i) {
         ptr->x += i;
+    }
+}
+
+// The inner loop of this function has a write that forces the compiler to
+// generate code to reload the row pointers. However, the presence of a function call
+// within the loop means that even if we fix the write-through-char problem the compiler
+// will not be able to vectorise.
+void write2d_alias_with_call(char **buf, size_t x, size_t y) {
+    for (size_t i = 0; i < y; ++i) {
+        for (size_t j = 0; j < x; ++j) {
+            printf("I'm a function call\n");
+            buf[i][j] = 0;
+        }
     }
 }
