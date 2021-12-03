@@ -67,10 +67,20 @@ void write_through_struct(char *buf, PointerHolder *ptr, int y, size_t cnt) {
 // passed by pointer. This means the int must be loaded from memory on each
 // iteration of the loop due to the write through the char type, as the location
 // written to by the char type may overlap with the ptr->x int.
-void write_to_int_in_mem(char *buf, IntHolder *ptr, int y, size_t cnt) {
+void write_to_int_in_mem(char *buf, ValHolder *ptr, int y, size_t cnt) {
     ptr->x = 0;
     for (size_t i = 0; i < cnt; ++i) {
         buf[i] = 'A';
         ptr->x += i;
+    }
+}
+
+// Loop with alias of a character type that is accessed through a pointer that is
+// in a struct.
+void char_alias_through_struct(char *buf, PointerHolder *ptr, int y, size_t cnt) {
+    *(ptr->x) = 0;
+    for (size_t i = 0; i < cnt; ++i) {
+        *(ptr->c) = 1;
+        *(ptr->x) += i;
     }
 }

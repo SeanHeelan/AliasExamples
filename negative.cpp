@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <vector>
 
-
 #include "aetypes.h"
 
 // From https://travisdowns.github.io/blog/2019/08/26/vector-inc.html
@@ -63,7 +62,7 @@ void write_through_struct_noalias(char *buf, PointerHolder *ptr, int y, size_t c
 
 // Differs from its counterpart in positive.cpp for the same reason as
 // write_through_struct_noalias.
-void write_to_int_in_mem_noalias(char *buf, IntHolder *ptr, int y, size_t cnt) {
+void write_to_int_in_mem_noalias(char *buf, ValHolder *ptr, int y, size_t cnt) {
     ptr->x = 0;
     buf[0] = 'A';
     for (size_t i = 0; i < cnt; ++i) {
@@ -81,5 +80,16 @@ void write2d_alias_with_call(char **buf, size_t x, size_t y) {
             printf("I'm a function call\n");
             buf[i][j] = 0;
         }
+    }
+}
+
+// Unlike char_alias_through_struct in positive.cpp, in this example the character
+// in the struct is not accessed through a pointer, and thus no character aliasing
+// can occur.
+void char_val_in_struct(char *buf, PointerHolder *ptr, ValHolder *val, int y, size_t cnt) {
+    *(ptr->x) = 0;
+    for (size_t i = 0; i < cnt; ++i) {
+        val->c = 1;
+        *(ptr->x) += i;
     }
 }

@@ -3,10 +3,12 @@
 
 struct PointerHolder {
     int *x;
+    char *c;
 };
 
-struct IntHolder {
+struct ValHolder {
     int x;
+    char c;
 };
 
 #endif
