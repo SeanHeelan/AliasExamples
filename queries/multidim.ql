@@ -53,6 +53,15 @@ predicate writeLoopWithinAccessLoop(Expr access, Expr write) {
 
 predicate isPointerFieldAccess(Expr e) { exists(PointerFieldAccess p | p = e.(PointerFieldAccess)) }
 
+predicate isInSimpleLoop(Expr e) {
+  exists(Loop loop |
+    e.getEnclosingStmt().getParentStmt*() = loop.getStmt() and
+    not exists(FunctionCall fc | fc.getEnclosingStmt().getParentStmt*() = loop.getStmt())
+  )
+}
+
+// w represents the expression that writes through an aliasing type
+// a represents the expression that accesses some data in memory
 from Expr w, Expr a
 where
   (
@@ -66,6 +75,9 @@ where
     ) and
     // Write and access are in the same loop, or write loop is nested within
     // the access loop
-    writeLoopWithinAccessLoop(a, w)
+    writeLoopWithinAccessLoop(a, w) and
+    // The loop does not contain things that would otherwise prevent
+    // vectorisation
+    isInSimpleLoop(a)
   )
 select w, a, "Write through AT in loop"
