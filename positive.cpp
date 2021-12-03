@@ -65,7 +65,8 @@ void write_through_struct(char *buf, PointerHolder *ptr, int y, size_t cnt) {
 
 // The inner loop of this function has a write to an int inside a struct that is
 // passed by pointer. This means the int must be loaded from memory on each
-// iteration of the loop due to the write through the char type.
+// iteration of the loop due to the write through the char type, as the location
+// written to by the char type may overlap with the ptr->x int.
 void write_to_int_in_mem(char *buf, IntHolder *ptr, int y, size_t cnt) {
     ptr->x = 0;
     for (size_t i = 0; i < cnt; ++i) {

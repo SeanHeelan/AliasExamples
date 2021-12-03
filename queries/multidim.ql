@@ -6,6 +6,12 @@
 // * Use of STL container functions that are typically inlined and that
 //    access memory (e.g. vector.size())
 // * A load of anything inside a loop from memory (that is then used)
+//
+// False positives:
+//  * isCharWriteExpr doesn't check that the write is to memory
+//  * Loops containing function calls and conditionals probably should be excluded
+//  * There seems to be an issue with false positives in scenarios where the
+//      access loop is within the write loop.
 import cpp
 
 // True if the expression writes to a character type
@@ -51,6 +57,7 @@ predicate writeLoopWithinAccessLoop(Expr access, Expr write) {
   )
 }
 
+// True if the expression is a PointerFieldAccess expression
 predicate isPointerFieldAccess(Expr e) { exists(PointerFieldAccess p | p = e.(PointerFieldAccess)) }
 
 predicate isInSimpleLoop(Expr e) {
