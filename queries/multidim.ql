@@ -8,22 +8,34 @@
 // * A load of anything inside a loop from memory (that is then used)
 //
 // False positives:
-//  * isCharWriteExpr doesn't check that the write is to memory
-//  * Loops containing function calls and conditionals probably should be excluded
 //  * There seems to be an issue with false positives in scenarios where the
 //      access loop is within the write loop.
+//  * The access check doesn't actually identify loads from memory
+//  * I still don't handle the vector examples
 import cpp
 
-// True if the expression writes to a character type
+// True if the expression writes to a character type through a pointer
 predicate isCharWriteExpr(Expr e) {
-  exists(AssignExpr a |
+  exists(AssignExpr a, Expr lval |
     a = e.(AssignExpr) and
-    a.getLValue().getType().stripType() instanceof CharType
+    lval = a.getLValue() and
+    lval.getType().stripType() instanceof CharType and
+    (
+      lval instanceof PointerFieldAccess or
+      lval instanceof ArrayExpr or
+      lval instanceof OverloadedArrayExpr
+    )
   )
   or
   exists(PostfixIncrExpr p |
     p = e.(PostfixIncrExpr) and
-    p.getType().stripType() instanceof CharType
+    p.getType().stripType() instanceof CharType and
+    (
+      p.getOperand() instanceof PointerFieldAccess or
+      p.getOperand() instanceof ArrayExpr or
+      p.getOperand() instanceof ReferenceDereferenceExpr or
+      p.getOperand() instanceof OverloadedArrayExpr
+    )
   )
 }
 
@@ -57,9 +69,6 @@ predicate writeLoopWithinAccessLoop(Expr access, Expr write) {
   )
 }
 
-// True if the expression is a PointerFieldAccess expression
-predicate isPointerFieldAccess(Expr e) { exists(PointerFieldAccess p | p = e.(PointerFieldAccess)) }
-
 predicate isInSimpleLoop(Expr e) {
   exists(Loop loop |
     e.getEnclosingStmt().getParentStmt*() = loop.getStmt() and
@@ -78,7 +87,7 @@ where
     // Access conditions
     (
       isMultiDimensionalArrayAccess(a) or
-      isPointerFieldAccess(a)
+      a instanceof PointerFieldAccess
     ) and
     // Write and access are in the same loop, or write loop is nested within
     // the access loop
