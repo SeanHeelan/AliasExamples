@@ -10,8 +10,8 @@
 // False positives:
 //  * There seems to be an issue with false positives in scenarios where the
 //      access loop is within the write loop.
-//  * The access check doesn't actually identify loads from memory
 //  * I still don't handle the vector examples
+//  * Writes to statically sized arrays in structs are being identified as aliasing writes
 import cpp
 
 // True if the expression writes to a character type through a pointer
@@ -76,6 +76,30 @@ predicate isInSimpleLoop(Expr e) {
   )
 }
 
+predicate isWriteThroughMemDeref(Expr e) {
+  exists(AssignExpr a, Expr lval |
+    a = e.(AssignExpr) and
+    lval = a.getLValue() and
+    not lval.getType().stripType() instanceof CharType and
+    (
+      lval instanceof PointerDereferenceExpr or
+      lval instanceof ArrayExpr or
+      lval instanceof OverloadedArrayExpr
+    )
+  )
+  or
+  exists(PostfixIncrExpr p |
+    p = e.(PostfixIncrExpr) and
+    not p.getType().stripType() instanceof CharType and
+    (
+      p.getOperand() instanceof PointerDereferenceExpr or
+      p.getOperand() instanceof ArrayExpr or
+      p.getOperand() instanceof ReferenceDereferenceExpr or
+      p.getOperand() instanceof OverloadedArrayExpr
+    )
+  )
+}
+
 // w represents the expression that writes through an aliasing type
 // a represents the expression that accesses some data in memory
 from Expr w, Expr a
@@ -86,8 +110,9 @@ where
     (isInLoopBody(w) or isForLoopUpdate(w)) and
     // Access conditions
     (
-      isMultiDimensionalArrayAccess(a) or
-      a instanceof PointerFieldAccess
+      isMultiDimensionalArrayAccess(a)
+      or
+      isWriteThroughMemDeref(a)
     ) and
     // Write and access are in the same loop, or write loop is nested within
     // the access loop
