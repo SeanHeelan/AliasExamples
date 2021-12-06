@@ -93,3 +93,14 @@ void char_val_in_struct(char *buf, PointerHolder *ptr, ValHolder *val, int y, si
         *(ptr->x) += i;
     }
 }
+
+// In this example there is a write through a char pointer, but there is no load from
+// a pointer within the loop that could be modified by the character write. vptr is
+// passed on the stack.
+void pointer_is_on_stack(char *buf, PointerHolder *ptr, ValHolder *vptr, int y, size_t cnt) {
+    *(ptr->x) = 0;
+    for (size_t i = 0; i < cnt; ++i) {
+        *(ptr->c) = 1;
+        vptr->x += 1;
+    }
+}
