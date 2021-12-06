@@ -9,7 +9,14 @@
 //
 // False positives:
 //  * There seems to be an issue with false positives in scenarios where the
-//      access loop is within the write loop.
+//      access loop is within the write loop. On this topic, the current approach
+//      isn't really correct. What we care about is finding scenarios where the
+//      compiler is forced to generate a reload of a pointer from memory in a
+//      scenario where it otherwise wouldn't. This happens when an access takes
+//      place to a value, followed by a write through a character type, and then
+//      another access to the first value without a change in the pointer used.
+//      That could happen when the access loop is nested in the write loop OR
+//      vice versa.
 //  * I still don't handle the vector examples
 //  * Writes to statically sized arrays in structs are being identified as aliasing writes
 import cpp
