@@ -44,6 +44,39 @@ predicate isCharWriteExpr(Expr e) {
       p.getOperand() instanceof OverloadedArrayExpr
     )
   )
+  or
+  exists(PostfixDecrExpr p |
+    p = e.(PostfixDecrExpr) and
+    p.getType().stripType() instanceof CharType and
+    (
+      p.getOperand() instanceof PointerDereferenceExpr or
+      p.getOperand() instanceof ArrayExpr or
+      p.getOperand() instanceof ReferenceDereferenceExpr or
+      p.getOperand() instanceof OverloadedArrayExpr
+    )
+  )
+  or
+  exists(PrefixIncrExpr p |
+    p = e.(PrefixIncrExpr) and
+    p.getType().stripType() instanceof CharType and
+    (
+      p.getOperand() instanceof PointerDereferenceExpr or
+      p.getOperand() instanceof ArrayExpr or
+      p.getOperand() instanceof ReferenceDereferenceExpr or
+      p.getOperand() instanceof OverloadedArrayExpr
+    )
+  )
+  or
+  exists(PrefixDecrExpr p |
+    p = e.(PrefixDecrExpr) and
+    p.getType().stripType() instanceof CharType and
+    (
+      p.getOperand() instanceof PointerDereferenceExpr or
+      p.getOperand() instanceof ArrayExpr or
+      p.getOperand() instanceof ReferenceDereferenceExpr or
+      p.getOperand() instanceof OverloadedArrayExpr
+    )
+  )
 }
 
 // True if the expresion is within the body of a loop
