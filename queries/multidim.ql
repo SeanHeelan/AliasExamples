@@ -21,7 +21,7 @@ predicate isCharWriteExpr(Expr e) {
     lval = a.getLValue() and
     lval.getType().stripType() instanceof CharType and
     (
-      lval instanceof PointerFieldAccess or
+      lval instanceof PointerDereferenceExpr or
       lval instanceof ArrayExpr or
       lval instanceof OverloadedArrayExpr
     )
@@ -31,7 +31,7 @@ predicate isCharWriteExpr(Expr e) {
     p = e.(PostfixIncrExpr) and
     p.getType().stripType() instanceof CharType and
     (
-      p.getOperand() instanceof PointerFieldAccess or
+      p.getOperand() instanceof PointerDereferenceExpr or
       p.getOperand() instanceof ArrayExpr or
       p.getOperand() instanceof ReferenceDereferenceExpr or
       p.getOperand() instanceof OverloadedArrayExpr
