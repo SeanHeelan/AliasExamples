@@ -84,3 +84,13 @@ void char_alias_through_struct(char *buf, PointerHolder *ptr, int y, size_t cnt)
         *(ptr->x) += i;
     }
 }
+
+// Demonstrates a case where the base pointer is unchanged on the second access
+void base_ptr_unchanged(char *buf, ValHolder *v1, ValHolder *v2) {
+    v1->x = 10;
+    v2 = v1;
+    buf[0] = 'A';
+    // If it weren't for the char write the compiler could optimise this function
+    // to a single write of 20. Instead it must emit an `add [&ptr->x], 10` here
+    v1->x += 10;
+}

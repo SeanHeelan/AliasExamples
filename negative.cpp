@@ -104,3 +104,24 @@ void pointer_is_on_stack(char *buf, PointerHolder *ptr, ValHolder *vptr, int y, 
         vptr->x += 1;
     }
 }
+
+// Demonstrates a case where the second access is not to the same location as the
+// first, and thus would have
+void base_ptr_changed(char *buf, ValHolder *v1, ValHolder *v2) {
+    v1->x = 10;
+    buf[0] = 'A';
+    v1 = v2;
+    v1->x += 10;
+}
+
+// Loop with alias of a character type that is accessed through a pointer that is
+// in a struct. However, the base pointer changes with each loop iteration and
+// must be loaded anyway.
+void base_ptr_changed2(char *buf, PointerHolder *ptr, int y, size_t cnt) {
+    for (size_t i = 0; i < cnt; ++i, ptr++) { // ptr modified on each iteration
+        // Write through char type
+        *(ptr->c) = 1;
+        // x must be loaded on each iteration, regardless of the char write
+        *(ptr->x) += i;
+    }
+}
