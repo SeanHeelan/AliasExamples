@@ -94,3 +94,16 @@ void base_ptr_unchanged(char *buf, ValHolder *v1, ValHolder *v2) {
     // to a single write of 20. Instead it must emit an `add [&ptr->x], 10` here
     v1->x += 10;
 }
+
+// Base ptr is changed, but after the loop
+void base_ptr_changed_later(char *buf, PointerHolder *ptr, int y, size_t cnt) {
+    for (size_t i = 0; i < cnt; ++i) {
+        // Write through char type
+        *(ptr->c) = 1;
+        // x must be loaded every time due to the char write
+        *(ptr->x) += i;
+   }
+
+   ptr++;
+   *(ptr->x) += cnt;
+}
