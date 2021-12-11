@@ -15,7 +15,8 @@ where
     w != a2 and
     a1 = w.getAPredecessor+() and
     w = a2.getAPredecessor+() and
-    accessVar = a1.getOperand().(PointerFieldAccess).getTarget() and
-    not exists(AssignExpr redef | redef.getLValue().(VariableAccess).getTarget() = accessVar)
+    accessVar = a1.getOperand().(PointerFieldAccess).getQualifier().(VariableAccess).getTarget() and
+    not exists(AssignExpr redef | redef.getLValue().(VariableAccess).getTarget() = accessVar) and
+    not exists(PostfixIncrExpr redef | redef.getOperand().(VariableAccess).getTarget() = accessVar)
   )
-select a1, w, a2, "Found ..."
+select a1, w, a2, accessVar, "Found ..."
