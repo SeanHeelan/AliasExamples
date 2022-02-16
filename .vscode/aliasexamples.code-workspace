@@ -2,6 +2,34 @@
 	"folders": [
 		{
 			"path": ".."
+		},
+		{
+			"name": "[SeanHeelan_AliasExamples_97f8d94 source archive]",
+			"uri": "codeql-zip-archive://0-268/home/sean/.config/Code/User/workspaceStorage/ae921be6f6150bf37db16df6c2ad8fe3/GitHub.vscode-codeql/SeanHeelan_AliasExamples_cpp-srcVersion_97f8d94e60ac1f3edd681536d63ca5d74c5af248-dist_codeql-bundle-linux64-20220128-1763603810/SeanHeelan_AliasExamples_97f8d94/src.zip"
+		},
+		{
+			"name": "[facebook_folly_de82c42 source archive]",
+			"uri": "codeql-zip-archive://0-248/home/sean/.config/Code/User/workspaceStorage/ae921be6f6150bf37db16df6c2ad8fe3/GitHub.vscode-codeql/facebook_folly_cpp-srcVersion_de82c42624c1f174c5ce40d7f0ceea563e7a6dd2-dist_codeql-bundle-linux64-20211116-1468997113/facebook_folly_de82c42/src.zip"
+		},
+		{
+			"name": "[torvalds_linux_5f58da2 source archive]",
+			"uri": "codeql-zip-archive://0-248/home/sean/.config/Code/User/workspaceStorage/ae921be6f6150bf37db16df6c2ad8fe3/GitHub.vscode-codeql/torvalds_linux_cpp-srcVersion_5f58da2befa58edf3a70b91ed87ed9bf77f1e70e-dist_codeql-bundle-linux64-20211116-1468997113/torvalds_linux_5f58da2/src.zip"
+		},
+		{
+			"name": "[libjpeg-turbo_libjpeg-turbo_a01857c source archive]",
+			"uri": "codeql-zip-archive://0-274/home/sean/.config/Code/User/workspaceStorage/ae921be6f6150bf37db16df6c2ad8fe3/GitHub.vscode-codeql/libjpeg-turbo_libjpeg-turbo_cpp-srcVersion_a01857cff6a2b7b3283ef1d0ecb6b01d06b597f8-dist_codeql-bundle-linux64-20211116-1468997113/libjpeg-turbo_libjpeg-turbo_a01857c/src.zip"
+		},
+		{
+			"name": "[tesseract-ocr_tesseract_c540102 source archive]",
+			"uri": "codeql-zip-archive://0-266/home/sean/.config/Code/User/workspaceStorage/ae921be6f6150bf37db16df6c2ad8fe3/GitHub.vscode-codeql/tesseract-ocr_tesseract_cpp-srcVersion_c540102620f59c4f06119d55ca0a9b79f7a3dd46-dist_codeql-bundle-linux64-20211116-1468997113/tesseract-ocr_tesseract_c540102/src.zip"
+		},
+		{
+			"name": "[python_cpython_0aa0bd0 source archive]",
+			"uri": "codeql-zip-archive://0-248/home/sean/.config/Code/User/workspaceStorage/ae921be6f6150bf37db16df6c2ad8fe3/GitHub.vscode-codeql/python_cpython_cpp-srcVersion_0aa0bd056349f73de9577ccc38560c1d01864d51-dist_codeql-bundle-linux64-20211116-1468997113/python_cpython_0aa0bd0/src.zip"
+		},
+		{
+			"name": "[php_php-src_35b7dd1 source archive]",
+			"uri": "codeql-zip-archive://0-242/home/sean/.config/Code/User/workspaceStorage/ae921be6f6150bf37db16df6c2ad8fe3/GitHub.vscode-codeql/php_php-src_cpp-srcVersion_35b7dd11fd26dba5ef53435aa6ac29e34a56db2a-dist_codeql-bundle-linux64-20211116-1468997113/php_php-src_35b7dd1/src.zip"
 		}
 	],
 	"settings": {
