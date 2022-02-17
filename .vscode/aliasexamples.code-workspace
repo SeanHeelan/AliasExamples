@@ -30,6 +30,10 @@
 		{
 			"name": "[php_php-src_35b7dd1 source archive]",
 			"uri": "codeql-zip-archive://0-242/home/sean/.config/Code/User/workspaceStorage/ae921be6f6150bf37db16df6c2ad8fe3/GitHub.vscode-codeql/php_php-src_cpp-srcVersion_35b7dd11fd26dba5ef53435aa6ac29e34a56db2a-dist_codeql-bundle-linux64-20211116-1468997113/php_php-src_35b7dd1/src.zip"
+		},
+		{
+			"name": "[bitcoin_bitcoin_1e8aa02 source archive]",
+			"uri": "codeql-zip-archive://0-250/home/sean/.config/Code/User/workspaceStorage/ae921be6f6150bf37db16df6c2ad8fe3/GitHub.vscode-codeql/bitcoin_bitcoin_cpp-srcVersion_1e8aa02ec5cc2819c67ef40a7573c4b23a4c11cc-dist_codeql-bundle-linux64-20220211-1828528385/bitcoin_bitcoin_1e8aa02/src.zip"
 		}
 	],
 	"settings": {
