@@ -11,7 +11,7 @@
 
 import cpp
 
-// Find a loop with a call to vector.size() in the condition
+// Find a loop with a call to vector.size() (or some equivalent) in the condition
 predicate loopConditionAccessesMemory(Expr loopCond) {
   exists(Expr funcCall, Function func, string fname |
     funcCall = loopCond.getAChild() and
@@ -85,4 +85,4 @@ where
   (loopConditionAccessesMemory(l.getCondition()) or l instanceof RangeBasedForStmt) and
   isCharWriteExpr(w) and
   w.getEnclosingStmt().getParentStmt*() = l.getStmt()
-select l, w, "Found ..."
+select l.getLocation().getFile().getBaseName(), l, w, "Found ..."
