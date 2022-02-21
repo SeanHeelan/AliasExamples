@@ -11,6 +11,7 @@ from
   PointerDereferenceExpr w, PointerDereferenceExpr a1, PointerDereferenceExpr a2, Variable accessVar
 where
   (
+    w.getType().stripType() instanceof CharType and
     w != a1 and
     w != a2 and
     a1 = w.getAPredecessor+() and
