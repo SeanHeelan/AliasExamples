@@ -7,7 +7,11 @@
 // And in betwween 1 and 3 X is not modified
 // Problems:
 // 1. False positives due to memory references being on the stack
-// 2. False positives due to base variables changing before second access (e.g. write2d vs write2d_noalias)
+// 2. False negatives due to the 'base not modified' check limiting base to 
+//    only be a Variable. i.e. this excludes something like 'buf[i]' as a base in 'buf[i][j]'.
+
+
+// SEEMS TO BE A PROBLEM AT THE MOMENT WHEREBY I ONLY EVER GET RESULTS WHERE THE TWO ACCESSES ARE THE IDERNTICAL SAME ONES
 import cpp
 
 predicate isWriteThroughMemDeref(Expr e) {
@@ -38,6 +42,7 @@ where
     // a1 and a2 are accesses that use the same base and offset expressions
     a1.(ArrayExpr).getArrayBase() = a2.(ArrayExpr).getArrayBase() and 
     a1.(ArrayExpr).getArrayOffset() = a2.(ArrayExpr).getArrayOffset()  and 
+    a1 != a2 and 
 
     // Base is not modified between a1 and a2
     base = a1.(ArrayExpr).getArrayBase().(VariableAccess).getTarget() and 
@@ -47,6 +52,8 @@ where
     offset = a1.(ArrayExpr).getArrayOffset().(VariableAccess).getTarget() and 
     not exists(AssignExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getLValue().(VariableAccess).getTarget() = offset) and
     not exists(PostfixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = offset) and
-    not exists(PrefixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = offset) 
+    not exists(PrefixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = offset) and
+    not exists(PostfixDecrExpr redef| redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = offset) and
+    not exists(PostfixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = offset) 
   )
 select a1.getLocation().getFile().getBaseName(), a1, w, a2, "Found ..."
