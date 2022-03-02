@@ -58,7 +58,9 @@ where
         (a1 instanceof PointerFieldAccess and a2 instanceof PointerFieldAccess) and
         accessVar = a1.(PointerFieldAccess).getQualifier().(VariableAccess).getTarget() and
         // Assert that a1 and a2 use the same base pointer
-        accessVar = a2.(PointerFieldAccess).getQualifier().(VariableAccess).getTarget()
+        accessVar = a2.(PointerFieldAccess).getQualifier().(VariableAccess).getTarget() and 
+        // Assert a1 and a2 access the same field in the struct
+        a1.(PointerFieldAccess).getTarget() = a2.(PointerFieldAccess).getTarget()
       )
     )
     
