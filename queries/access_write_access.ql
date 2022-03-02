@@ -7,33 +7,67 @@
 // And in betwween 1 and 3 X is not modified
 import cpp
 
+predicate isWriteThroughMemDeref(Expr e) {
+    exists(AssignExpr a, Expr lval |
+      a = e.(AssignExpr) and
+      lval = a.getLValue() and
+      lval.getType().stripType() instanceof CharType and
+      (
+        lval instanceof PointerDereferenceExpr or
+        lval instanceof ArrayExpr or
+        lval instanceof OverloadedArrayExpr
+      )
+    )
+}
+
+// False positives due to not checking if a1 and a2 access the same thing
+// False positives due to accesses being writes
+// We only seem to be matching against things that include a pointer dereference, e.g. *(bla->x)
+// and not anything like v->x. That's because we only handle PointerDereferenceExprs below.
 from
-  PointerDereferenceExpr w, PointerDereferenceExpr a1, PointerDereferenceExpr a2, Variable accessVar
+  Expr w, Expr a1, Expr a2, Variable accessVar
 where
   (
-    w.getType().stripType() instanceof CharType and
-    w != a1 and
-    w != a2 and
+    isWriteThroughMemDeref(w) and 
     a1 = w.getAPredecessor+() and
     w = a2.getAPredecessor+() and
-    // We to get the variable holding the base pointer for the accesses. There are a few ways a
-    // PointerDerefrenceExpr may be formed.
     (
-      // Case 0: ptr->x
-      accessVar = a1.getOperand().(PointerFieldAccess).getQualifier().(VariableAccess).getTarget()
-      or
-      // Case1: *ptr
-      // We must assert that the operand is not a PointerFieldAccess, as a PointerFieldAccess
-      // is a subclass of VariableAccess and if we don't eliminate this this case can end up
-      // asserting `accessVar = x` in a ptr->x.
-      not a1.getOperand() instanceof PointerFieldAccess and
-      accessVar = a1.getOperand().(VariableAccess).getTarget()
-    ) and
+      // Either we are dealing with two PointerDereferenceExpr
+      (
+        a1 instanceof PointerDereferenceExpr and a2 instanceof PointerDereferenceExpr and 
+        // We to get the variable holding the base pointer for the accesses. There are a few ways a
+        // PointerDerefrenceExpr may be formed.
+        (
+          // Case 0: *(ptr->x)
+          accessVar = a1.(PointerDereferenceExpr).getOperand().(PointerFieldAccess).getQualifier().(VariableAccess).getTarget() and 
+          // Assert that a1 and a2 use the same base pointer
+          accessVar = a2.(PointerDereferenceExpr).getOperand().(PointerFieldAccess).getQualifier().(VariableAccess).getTarget()
+          or
+          // Case1: *ptr
+          // We must assert that the operand is not a PointerFieldAccess, as a PointerFieldAccess
+          // is a subclass of VariableAccess and if we don't eliminate this this case can end up
+          // asserting `accessVar = x` in a ptr->x.
+          not a1.(PointerDereferenceExpr).getOperand() instanceof PointerFieldAccess and
+          accessVar = a1.(PointerDereferenceExpr).getOperand().(VariableAccess).getTarget() and
+          // Assert that a1 and a2 use the same base pointer
+          accessVar = a2.(PointerDereferenceExpr).getOperand().(VariableAccess).getTarget()
+        )
+      ) or 
+      // Or we are dealing with two PointerFieldAccess
+      (
+        (a1 instanceof PointerFieldAccess and a2 instanceof PointerFieldAccess) and
+        accessVar = a1.(PointerFieldAccess).getQualifier().(VariableAccess).getTarget() and
+        // Assert that a1 and a2 use the same base pointer
+        accessVar = a2.(PointerFieldAccess).getQualifier().(VariableAccess).getTarget()
+      )
+    )
+    
+    and
     // Eliminate cases where the variable holding the base pointer is modified
-    not exists(AssignExpr redef | redef.getLValue().(VariableAccess).getTarget() = accessVar) and
-    not exists(PostfixIncrExpr redef | redef.getOperand().(VariableAccess).getTarget() = accessVar) and
-    not exists(PrefixIncrExpr redef | redef.getOperand().(VariableAccess).getTarget() = accessVar) and
-    not exists(PostfixDecrExpr redef | redef.getOperand().(VariableAccess).getTarget() = accessVar) and
-    not exists(PrefixDecrExpr redef | redef.getOperand().(VariableAccess).getTarget() = accessVar)
+    not exists(AssignExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getLValue().(VariableAccess).getTarget() = accessVar) and
+    not exists(PostfixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = accessVar) and
+    not exists(PrefixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = accessVar) and
+    not exists(PostfixDecrExpr redef| redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = accessVar) and
+    not exists(PostfixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = accessVar) 
   )
-select a1, w, a2, accessVar, "Found ..."
+select a1.getLocation().getFile().getBaseName(), a1, w, a2, accessVar, "Found ..."
