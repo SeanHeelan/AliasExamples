@@ -107,3 +107,10 @@ void base_ptr_changed_later(char *buf, PointerHolder *ptr, int y, size_t cnt) {
    ptr++;
    *(ptr->x) += cnt;
 }
+
+// Partner of add_vals_no_alias in negative.cpp
+void add_vals(char *buf, float *out, int in[], size_t offset) {
+    *out += in[offset];
+    buf[0] = 'A';
+    *out += in[offset];
+}
