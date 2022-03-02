@@ -66,7 +66,9 @@ void write_through_struct(char *buf, PointerHolder *ptr, int y, size_t cnt) {
 // The inner loop of this function has a write to an int inside a struct that is
 // passed by pointer. This means the int must be loaded from memory on each
 // iteration of the loop due to the write through the char type, as the location
-// written to by the char type may overlap with the ptr->x int.
+// written to by the char type may overlap with the ptr->x int. If this were not
+// the case the compiler could emit code to just accumulate the result in a register
+// and do a single write at the end.
 void write_to_int_in_mem(char *buf, ValHolder *ptr, int y, size_t cnt) {
     ptr->x = 0;
     for (size_t i = 0; i < cnt; ++i) {
@@ -85,7 +87,9 @@ void char_alias_through_struct(char *buf, PointerHolder *ptr, int y, size_t cnt)
     }
 }
 
-// Demonstrates a case where the base pointer is unchanged on the second access
+// In this example the write through the AT prevents the compiler from optimising the 
+// two writes through v1->x into a single one. This isn't really an example of what we
+// are trying to find however.
 void base_ptr_unchanged(char *buf, ValHolder *v1, ValHolder *v2) {
     v1->x = 10;
     v2 = v1;
