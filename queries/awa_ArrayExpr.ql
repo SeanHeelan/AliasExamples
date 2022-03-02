@@ -10,8 +10,9 @@
 // 2. False negatives due to the 'base not modified' check limiting base to 
 //    only be a Variable. i.e. this excludes something like 'buf[i]' as a base in 'buf[i][j]'.
 
-
 // SEEMS TO BE A PROBLEM AT THE MOMENT WHEREBY I ONLY EVER GET RESULTS WHERE THE TWO ACCESSES ARE THE IDERNTICAL SAME ONES
+// Perhaps this isn't a problem? Maybe there are no examples in the targets I'm looking at where they are not? I'll 
+// get an answer once the recently pushed database with add_vals is analysed. 
 import cpp
 
 predicate isWriteThroughMemDeref(Expr e) {
@@ -25,7 +26,7 @@ predicate isWriteThroughMemDeref(Expr e) {
         lval instanceof OverloadedArrayExpr
       )
     )
-  }
+}
 
 from
   Expr w, Expr a1, Expr a2, Variable base, Variable offset
@@ -42,7 +43,7 @@ where
     // a1 and a2 are accesses that use the same base and offset expressions
     a1.(ArrayExpr).getArrayBase() = a2.(ArrayExpr).getArrayBase() and 
     a1.(ArrayExpr).getArrayOffset() = a2.(ArrayExpr).getArrayOffset()  and 
-    a1 != a2 and 
+    a1.getLocation() != a2.getLocation() and
 
     // Base is not modified between a1 and a2
     base = a1.(ArrayExpr).getArrayBase().(VariableAccess).getTarget() and 
