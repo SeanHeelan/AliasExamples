@@ -88,8 +88,11 @@ void char_alias_through_struct(char *buf, PointerHolder *ptr, int y, size_t cnt)
 }
 
 // In this example the write through the AT prevents the compiler from optimising the 
-// two writes through v1->x into a single one. This isn't really an example of what we
-// are trying to find however.
+// two writes through v1->x into a single one. In this case the first write of a constant
+// is 'akin' to a read of a value in the sense that the compiler knows at that point 
+// what value is going to be in v1->x, and could in theory hold it in a register (or just
+// emit the single store, which is what it would actually do). Probably not worth our while
+// trying to find this specific case.
 void base_ptr_unchanged(char *buf, ValHolder *v1, ValHolder *v2) {
     v1->x = 10;
     v2 = v1;
