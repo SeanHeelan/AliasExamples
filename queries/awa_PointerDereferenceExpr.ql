@@ -48,12 +48,28 @@ where
       // Assert that a1 and a2 use the same base pointer
       accessVar = a2.(PointerDereferenceExpr).getOperand().(VariableAccess).getTarget())
     ) and
-    
-    // Eliminate cases where the variable holding the base pointer is modified
-    not exists(AssignExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getLValue().(VariableAccess).getTarget() = accessVar) and
-    not exists(PostfixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = accessVar) and
-    not exists(PrefixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = accessVar) and
-    not exists(PostfixDecrExpr redef| redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = accessVar) and
-    not exists(PostfixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = accessVar) 
+    not exists(AssignExpr redef | 
+      redef = a1.getASuccessor+() 
+      and redef = a2.getAPredecessor+() 
+      and redef.(AssignExpr).getLValue().(VariableAccess).getTarget() = accessVar
+    )
+    and not exists(Expr redef |  
+        (
+          redef instanceof PostfixIncrExpr
+          or redef instanceof PrefixIncrExpr
+          or redef instanceof PostfixDecrExpr
+          or redef instanceof PostfixIncrExpr
+        ) 
+        and redef = a1.getASuccessor+() 
+        and redef = a2.getAPredecessor+() 
+        and redef.(UnaryOperation).getOperand().(VariableAccess).getTarget() = accessVar
+    )
+    // Eliminate cases where the access variable is redeclared prior to its second use
+    // e.g. in the case of a loop where the access variable is redeclared within the loop
+    and not exists (DeclStmt ds, int i | 
+        ds = a1.getASuccessor+() 
+        and ds = a2.getAPredecessor+()
+        and ds.getDeclarationEntry(i).(VariableDeclarationEntry).getVariable() = accessVar
+    )  
   )
 select a1.getLocation().getFile().getBaseName(), a1, w, a2, accessVar, "Found ..."

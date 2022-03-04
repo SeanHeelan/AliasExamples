@@ -47,14 +47,38 @@ where
 
     // Base is not modified between a1 and a2
     base = a1.(ArrayExpr).getArrayBase().(VariableAccess).getTarget() and 
-    not exists(AssignExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getLValue().(VariableAccess).getTarget() = base) and
+    not exists(AssignExpr redef | 
+      redef = a1.getASuccessor+() 
+      and redef = a2.getAPredecessor+() 
+      and redef.getLValue().(VariableAccess).getTarget() = base)
+    and not exists (DeclStmt ds, int i | 
+        ds = a1.getASuccessor+() 
+        and ds = a2.getAPredecessor+()
+        and ds.getDeclarationEntry(i).(VariableDeclarationEntry).getVariable() = base
+    ) 
 
     // Offset is not modified between a1 and a2
-    offset = a1.(ArrayExpr).getArrayOffset().(VariableAccess).getTarget() and 
-    not exists(AssignExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getLValue().(VariableAccess).getTarget() = offset) and
-    not exists(PostfixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = offset) and
-    not exists(PrefixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = offset) and
-    not exists(PostfixDecrExpr redef| redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = offset) and
-    not exists(PostfixIncrExpr redef | redef = a1.getASuccessor+() and redef = a2.getAPredecessor+() and redef.getOperand().(VariableAccess).getTarget() = offset) 
+    and offset = a1.(ArrayExpr).getArrayOffset().(VariableAccess).getTarget() and 
+    not exists(AssignExpr redef | 
+      redef = a1.getASuccessor+() 
+      and redef = a2.getAPredecessor+() 
+      and redef.(AssignExpr).getLValue().(VariableAccess).getTarget() = offset
+    )
+    and not exists(Expr redef |  
+      (
+        redef instanceof PostfixIncrExpr
+        or redef instanceof PrefixIncrExpr
+        or redef instanceof PostfixDecrExpr
+        or redef instanceof PostfixIncrExpr
+      ) 
+      and redef = a1.getASuccessor+() 
+      and redef = a2.getAPredecessor+() 
+      and redef.(UnaryOperation).getOperand().(VariableAccess).getTarget() = offset
+    )
+    and not exists (DeclStmt ds, int i | 
+        ds = a1.getASuccessor+() 
+        and ds = a2.getAPredecessor+()
+        and ds.getDeclarationEntry(i).(VariableDeclarationEntry).getVariable() = offset
+    )
   )
 select a1.getLocation().getFile().getBaseName(), a1, w, a2, "Found ..."
