@@ -43,7 +43,7 @@ where
     // a1 and a2 are accesses that use the same base and offset expressions
     a1.(ArrayExpr).getArrayBase() = a2.(ArrayExpr).getArrayBase() and 
     a1.(ArrayExpr).getArrayOffset() = a2.(ArrayExpr).getArrayOffset()  and 
-    a1.getLocation() != a2.getLocation() and
+    // a1.getLocation() != a2.getLocation() and
 
     // Base is not modified between a1 and a2
     base = a1.(ArrayExpr).getArrayBase().(VariableAccess).getTarget() and 
