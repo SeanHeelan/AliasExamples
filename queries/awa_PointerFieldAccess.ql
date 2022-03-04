@@ -62,4 +62,4 @@ where
         and ds.getDeclarationEntry(i).(VariableDeclarationEntry).getVariable() = accessVar
     ) 
   )
-select a1.getLocation().getFile().getBaseName(), a1, w, a2, accessVar, "Found ..."
+select a1.getLocation().getFile().getBaseName(), a1.getLocation().getStartLine(), a1, w, a2, accessVar, "Found ..."
