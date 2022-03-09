@@ -130,5 +130,5 @@ void base_ptr_changed2(char *buf, PointerHolder *ptr, int y, size_t cnt) {
 void add_vals_no_alias(char *buf, float *out, int in[], size_t offset) {
     *out += in[offset];
     buf[0] = 'A';
-    *out += in[offset];
+    *out += in[++offset];
 }
