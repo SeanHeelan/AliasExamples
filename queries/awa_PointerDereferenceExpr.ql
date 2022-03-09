@@ -22,20 +22,19 @@ predicate isWriteThroughMemDeref(Expr e) {
 
 // False positives due to accesses being writes
 from
-  Expr w, Expr a1, Expr a2, Variable accessVar
+  Expr w, PointerDereferenceExpr a1, PointerDereferenceExpr a2, Variable accessVar
 where
   (
     isWriteThroughMemDeref(w) and 
     a1 = w.getAPredecessor+() and
     w = a2.getAPredecessor+() and
-    a1 instanceof PointerDereferenceExpr and a2 instanceof PointerDereferenceExpr and 
     // We to get the variable holding the base pointer for the accesses. There are a few ways a
     // PointerDerefrenceExpr may be formed.
     (
       // Case 0: *(ptr->x)
-      (accessVar = a1.(PointerDereferenceExpr).getOperand().(PointerFieldAccess).getQualifier().(VariableAccess).getTarget() and 
+      (accessVar = a1.getOperand().(PointerFieldAccess).getQualifier().(VariableAccess).getTarget() and 
       // Assert that a1 and a2 use the same base pointer
-      accessVar = a2.(PointerDereferenceExpr).getOperand().(PointerFieldAccess).getQualifier().(VariableAccess).getTarget())
+      accessVar = a2.getOperand().(PointerFieldAccess).getQualifier().(VariableAccess).getTarget())
       
       or
       // Case1: *ptr
@@ -43,10 +42,10 @@ where
       // is a subclass of VariableAccess and if we don't eliminate this this case can end up
       // asserting `accessVar = x` in a ptr->x.
 
-      (not a1.(PointerDereferenceExpr).getOperand() instanceof PointerFieldAccess and
-      accessVar = a1.(PointerDereferenceExpr).getOperand().(VariableAccess).getTarget() and
+      (not a1.getOperand() instanceof PointerFieldAccess and
+      accessVar = a1.getOperand().(VariableAccess).getTarget() and
       // Assert that a1 and a2 use the same base pointer
-      accessVar = a2.(PointerDereferenceExpr).getOperand().(VariableAccess).getTarget())
+      accessVar = a2.getOperand().(VariableAccess).getTarget())
     ) and
     not exists(AssignExpr redef | 
       redef = a1.getASuccessor+() 

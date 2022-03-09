@@ -23,19 +23,18 @@ predicate isWriteThroughMemDeref(Expr e) {
 
 // False positives due to accesses being writes
 from
-  Expr w, Expr a1, Expr a2, Variable accessVar
+  Expr w,  PointerFieldAccess a1, PointerFieldAccess a2, Variable accessVar
 where
   (
     isWriteThroughMemDeref(w) and 
     a1 = w.getAPredecessor+() and
     w = a2.getAPredecessor+() and
     
-    (a1 instanceof PointerFieldAccess and a2 instanceof PointerFieldAccess) and
-    accessVar = a1.(PointerFieldAccess).getQualifier().(VariableAccess).getTarget() and
+    accessVar = a1.getQualifier().(VariableAccess).getTarget() and
     // Assert that a1 and a2 use the same base pointer
-    accessVar = a2.(PointerFieldAccess).getQualifier().(VariableAccess).getTarget() and 
+    accessVar = a2.getQualifier().(VariableAccess).getTarget() and 
     // Assert a1 and a2 access the same field in the struct
-    a1.(PointerFieldAccess).getTarget() = a2.(PointerFieldAccess).getTarget() and
+    a1.getTarget() = a2.getTarget() and
 
     // Eliminate cases where the variable holding the base pointer is modified
     not exists(AssignExpr redef | 
