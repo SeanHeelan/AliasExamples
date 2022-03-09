@@ -48,7 +48,7 @@ where
           redef instanceof PostfixIncrExpr
           or redef instanceof PrefixIncrExpr
           or redef instanceof PostfixDecrExpr
-          or redef instanceof PostfixIncrExpr
+          or redef instanceof PrefixDecrExpr
         ) 
         and redef = a1.getASuccessor+() 
         and redef = a2.getAPredecessor+() 
