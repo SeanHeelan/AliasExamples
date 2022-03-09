@@ -64,6 +64,16 @@ where
       and redef = a2.getAPredecessor+() 
       and redef.(AssignExpr).getLValue().(VariableAccess).getTarget() = offset
     )
+    and not exists(AssignAddExpr redef | 
+      redef = a1.getASuccessor+() 
+      and redef = a2.getAPredecessor+() 
+      and redef.(AssignAddExpr).getLValue().(VariableAccess).getTarget() = offset
+    )
+    and not exists(AssignSubExpr redef | 
+      redef = a1.getASuccessor+() 
+      and redef = a2.getAPredecessor+() 
+      and redef.(AssignSubExpr).getLValue().(VariableAccess).getTarget() = offset
+    )
     and not exists(Expr redef |  
       (
         redef instanceof PostfixIncrExpr
