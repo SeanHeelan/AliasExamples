@@ -4,11 +4,16 @@
 // 2. Write to memory through a character type
 // 3. Load from memory via variable X
 //
-// And in betwween 1 and 3 X is not modified
+// And in between 1 and 3 X is not modified
+
 // Problems:
 // 1. False positives due to memory references being on the stack
 // 2. False negatives due to the 'base not modified' check limiting base to 
 //    only be a Variable. i.e. this excludes something like 'buf[i]' as a base in 'buf[i][j]'.
+// 3. False positives due to not checking if any subexpressions of the expression that form
+//    the offset have changed.
+// 4. False positives due to isWriteThroughMemDeref stripping pointer types and identifying
+//    writes to char* as well as just char types. 
 import cpp
 
 predicate isWriteThroughMemDeref(Expr e) {
@@ -31,7 +36,7 @@ where
     isWriteThroughMemDeref(w) 
 
     // Sequence of execution is a1 -> w -> a2
-    and  a1 = w.getAPredecessor+() 
+    and a1 = w.getAPredecessor+() 
     and w = a2.getAPredecessor+() 
 
     // a1 and a2 access the same array[offset]
@@ -71,7 +76,7 @@ where
         redef instanceof PostfixIncrExpr
         or redef instanceof PrefixIncrExpr
         or redef instanceof PostfixDecrExpr
-        or redef instanceof PostfixIncrExpr
+        or redef instanceof PrefixDecrExpr
       ) 
       and redef = a1.getASuccessor+() 
       and redef = a2.getAPredecessor+() 
