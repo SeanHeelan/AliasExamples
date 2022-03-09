@@ -6,7 +6,7 @@
 //
 // And in between 1 and 3 X is not modified
 
-// Problems:
+// Known problems:
 // 1. False positives due to memory references being on the stack
 // 2. False negatives due to the 'base not modified' check limiting base to 
 //    only be a Variable. i.e. this excludes something like 'buf[i]' as a base in 'buf[i][j]'.
@@ -15,8 +15,6 @@
 // 4. False positives due to isWriteThroughMemDeref stripping pointer types and identifying
 //    writes to char* as well as just char types. 
 // 5. False positives due to not checking if the access is an assignment or a read
-//
-// This query doesn't seem to give too many results.
 import cpp
 
 predicate isWriteThroughMemDeref(Expr e) {

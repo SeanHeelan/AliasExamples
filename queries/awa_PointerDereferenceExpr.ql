@@ -20,7 +20,6 @@ predicate isWriteThroughMemDeref(Expr e) {
     )
 }
 
-// False positives due to accesses being writes
 from
   Expr w, PointerDereferenceExpr a1, PointerDereferenceExpr a2, Variable accessVar
 where
@@ -71,4 +70,4 @@ where
         and ds.getDeclarationEntry(i).(VariableDeclarationEntry).getVariable() = accessVar
     )  
   )
-select a1.getLocation().getFile().getBaseName(), a1.getLocation().getStartLine(), a1, w, a2, accessVar, "Found ..."
+select a1.getLocation().getFile().getBaseName(), a1.getLocation().getStartLine(), a1, w, a2, accessVar
