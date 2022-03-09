@@ -9,10 +9,6 @@
 // 1. False positives due to memory references being on the stack
 // 2. False negatives due to the 'base not modified' check limiting base to 
 //    only be a Variable. i.e. this excludes something like 'buf[i]' as a base in 'buf[i][j]'.
-
-// SEEMS TO BE A PROBLEM AT THE MOMENT WHEREBY I ONLY EVER GET RESULTS WHERE THE TWO ACCESSES ARE THE IDERNTICAL SAME ONES
-// Perhaps this isn't a problem? Maybe there are no examples in the targets I'm looking at where they are not? I'll 
-// get an answer once the recently pushed database with add_vals is analysed. 
 import cpp
 
 predicate isWriteThroughMemDeref(Expr e) {
@@ -32,21 +28,18 @@ from
   Expr w, ArrayExpr a1, ArrayExpr a2, Variable base, Variable offset
 where
   (
-    isWriteThroughMemDeref(w) and
+    isWriteThroughMemDeref(w) 
 
     // Sequence of execution is a1 -> w -> a2
-    a1 = w.getAPredecessor+() and
-    w = a2.getAPredecessor+() and
+    and  a1 = w.getAPredecessor+() 
+    and w = a2.getAPredecessor+() 
 
-
-    // a1 and a2 are accesses that use the same base and offset expressions
-    a1.getArrayBase() = a2.getArrayBase() and 
-    a1.getArrayOffset() = a2.getArrayOffset()  and 
-    // a1.getLocation() != a2.getLocation() and
+    // a1 and a2 access the same array[offset]
+    and base.getAnAccess() = a1.getArrayBase() and base.getAnAccess() = a2.getArrayBase() 
+    and offset.getAnAccess() = a1.getArrayOffset() and offset.getAnAccess() = a2.getArrayOffset()
 
     // Base is not modified between a1 and a2
-    base = a1.getArrayBase().(VariableAccess).getTarget() and 
-    not exists(AssignExpr redef | 
+    and not exists(AssignExpr redef | 
       redef = a1.getASuccessor+() 
       and redef = a2.getAPredecessor+() 
       and redef.getLValue().(VariableAccess).getTarget() = base)
@@ -90,4 +83,4 @@ where
         and ds.getDeclarationEntry(i).(VariableDeclarationEntry).getVariable() = offset
     )
   )
-select a1.getLocation().getFile().getBaseName(), a1.getLocation().getStartLine(), a1, w, a2, "Found ..."
+select a1.getLocation().getFile().getBaseName(), a1.getLocation().getStartLine(), a1, w, a2
