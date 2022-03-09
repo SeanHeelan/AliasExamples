@@ -11,9 +11,12 @@
 // 2. False negatives due to the 'base not modified' check limiting base to 
 //    only be a Variable. i.e. this excludes something like 'buf[i]' as a base in 'buf[i][j]'.
 // 3. False positives due to not checking if any subexpressions of the expression that form
-//    the offset have changed.
+//    the offset or the base (e.g. intel_pm.c#2190 in the kernel) have changed. 
 // 4. False positives due to isWriteThroughMemDeref stripping pointer types and identifying
 //    writes to char* as well as just char types. 
+// 5. False positives due to not checking if the access is an assignment or a read
+//
+// This query doesn't seem to give too many results.
 import cpp
 
 predicate isWriteThroughMemDeref(Expr e) {
@@ -85,7 +88,10 @@ where
     and not exists (DeclStmt ds, int i | 
         ds = a1.getASuccessor+() 
         and ds = a2.getAPredecessor+()
-        and ds.getDeclarationEntry(i).(VariableDeclarationEntry).getVariable() = offset
+        and (
+          ds.getDeclarationEntry(i).(VariableDeclarationEntry).getVariable() = offset
+          or ds.getDeclarationEntry(i).(VariableDeclarationEntry).getVariable() = base
+        )
     )
   )
 select a1.getLocation().getFile().getBaseName(), a1.getLocation().getStartLine(), a1, w, a2
