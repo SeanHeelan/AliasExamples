@@ -29,24 +29,23 @@ predicate isWriteThroughMemDeref(Expr e) {
 }
 
 from
-  Expr w, Expr a1, Expr a2, Variable base, Variable offset
+  Expr w, ArrayExpr a1, ArrayExpr a2, Variable base, Variable offset
 where
   (
-    a1 instanceof ArrayExpr and
-    a2 instanceof ArrayExpr and
     isWriteThroughMemDeref(w) and
 
     // Sequence of execution is a1 -> w -> a2
     a1 = w.getAPredecessor+() and
     w = a2.getAPredecessor+() and
 
+
     // a1 and a2 are accesses that use the same base and offset expressions
-    a1.(ArrayExpr).getArrayBase() = a2.(ArrayExpr).getArrayBase() and 
-    a1.(ArrayExpr).getArrayOffset() = a2.(ArrayExpr).getArrayOffset()  and 
+    a1.getArrayBase() = a2.getArrayBase() and 
+    a1.getArrayOffset() = a2.getArrayOffset()  and 
     // a1.getLocation() != a2.getLocation() and
 
     // Base is not modified between a1 and a2
-    base = a1.(ArrayExpr).getArrayBase().(VariableAccess).getTarget() and 
+    base = a1.getArrayBase().(VariableAccess).getTarget() and 
     not exists(AssignExpr redef | 
       redef = a1.getASuccessor+() 
       and redef = a2.getAPredecessor+() 
@@ -58,7 +57,7 @@ where
     ) 
 
     // Offset is not modified between a1 and a2
-    and offset = a1.(ArrayExpr).getArrayOffset().(VariableAccess).getTarget() and 
+    and offset = a1.getArrayOffset().(VariableAccess).getTarget() and 
     not exists(AssignExpr redef | 
       redef = a1.getASuccessor+() 
       and redef = a2.getAPredecessor+() 
