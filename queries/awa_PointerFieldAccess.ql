@@ -26,6 +26,7 @@ from
 where
   (
     isWriteThroughMemDeref(w) and 
+    // Sequence of execution is a1 -> w -> a2
     a1 = w.getAPredecessor+() and
     w = a2.getAPredecessor+() and
     
