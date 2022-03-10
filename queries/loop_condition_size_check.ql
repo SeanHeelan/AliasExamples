@@ -14,12 +14,15 @@ import cpp
 // Find a loop with a call to vector.size() (or some equivalent) in the condition
 predicate loopConditionAccessesMemory(Expr loopCond) {
   exists(Expr funcCall, Function func, string fname |
-    funcCall = loopCond.getAChild() and
-    funcCall instanceof FunctionCall and
-    func = funcCall.(FunctionCall).getTarget() and
-    fname = func.getName() and
-    (fname = "size" or fname = "len" or fname = "count" or fname = "length" or 
-    fname = "begin" or fname = "end" or fname = "rbegin" or fname = "rend")
+    funcCall = loopCond.getAChild() 
+    and funcCall instanceof FunctionCall
+    and func = funcCall.(FunctionCall).getTarget()
+    and func.isInline()
+    and fname = func.getName() 
+    and (
+      fname = "size" or fname = "len" or fname = "count" or fname = "length"
+      or fname = "begin" or fname = "end" or fname = "rbegin" or fname = "rend"
+    )
   )
 }
 
