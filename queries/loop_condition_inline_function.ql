@@ -18,9 +18,9 @@ import aliashelpers
 
 // Returns true if the loop condition contains a function call that we think will 
 // result in a memory access.
-predicate loopConditionAccessesMemory(Expr loopCond) {
+predicate loopConditionAccessesMemory(Loop l) {
   exists(FunctionCall funcCall, Function func | 
-    funcCall = loopCond.getAChild()
+    funcCall = l.getAChild()
     and func = funcCall.getTarget() 
     and func.isInline()
     and allCalleesAreInline(func)
@@ -54,7 +54,7 @@ from Loop l, Expr w
 where
   // The loop condition accesses memory in some way
   (
-    loopConditionAccessesMemory(l.getCondition()) 
+    loopConditionAccessesMemory(l)
     or l instanceof RangeBasedForStmt
   )
   // And the loop contains a character-write expression
