@@ -7,8 +7,14 @@
 // * A loop with a vector.size() call in the condition
 // * Range-based for loops
 // * A loop that uses the .begin() or .end() functions in determining loop termination
+//
+// Results to check:
+//  * godotengine : basis_universal_unpacker in register_types.cpp appears to have a vectorisable
+//      memset() to 0x0
 
 import cpp
+
+import aliashelpers
 
 // Returns true if the loop condition contains a function call that we think will 
 // result in a memory access.
@@ -44,65 +50,6 @@ predicate allCalleesAreInline(Function func) {
   )
 }
 
-// Returns true if the expression will involve a write to memory through a 
-// character type.
-predicate isCharWriteExpr(Expr e) {
-  exists(AssignExpr a, Expr lval |
-    a = e.(AssignExpr) and
-    lval = a.getLValue() and
-    lval.getType().stripType() instanceof CharType and
-    (
-      lval instanceof PointerDereferenceExpr or
-      lval instanceof ArrayExpr or
-      lval instanceof OverloadedArrayExpr
-    )
-  )
-  or
-  exists(PostfixIncrExpr p |
-    p = e.(PostfixIncrExpr) and
-    p.getType().stripType() instanceof CharType and
-    (
-      p.getOperand() instanceof PointerDereferenceExpr or
-      p.getOperand() instanceof ArrayExpr or
-      p.getOperand() instanceof ReferenceDereferenceExpr or
-      p.getOperand() instanceof OverloadedArrayExpr
-    )
-  )
-  or
-  exists(PostfixDecrExpr p |
-    p = e.(PostfixDecrExpr) and
-    p.getType().stripType() instanceof CharType and
-    (
-      p.getOperand() instanceof PointerDereferenceExpr or
-      p.getOperand() instanceof ArrayExpr or
-      p.getOperand() instanceof ReferenceDereferenceExpr or
-      p.getOperand() instanceof OverloadedArrayExpr
-    )
-  )
-  or
-  exists(PrefixIncrExpr p |
-    p = e.(PrefixIncrExpr) and
-    p.getType().stripType() instanceof CharType and
-    (
-      p.getOperand() instanceof PointerDereferenceExpr or
-      p.getOperand() instanceof ArrayExpr or
-      p.getOperand() instanceof ReferenceDereferenceExpr or
-      p.getOperand() instanceof OverloadedArrayExpr
-    )
-  )
-  or
-  exists(PrefixDecrExpr p |
-    p = e.(PrefixDecrExpr) and
-    p.getType().stripType() instanceof CharType and
-    (
-      p.getOperand() instanceof PointerDereferenceExpr or
-      p.getOperand() instanceof ArrayExpr or
-      p.getOperand() instanceof ReferenceDereferenceExpr or
-      p.getOperand() instanceof OverloadedArrayExpr
-    )
-  )
-}
-
 from Loop l, Expr w
 where
   // The loop condition accesses memory in some way
@@ -110,7 +57,7 @@ where
     loopConditionAccessesMemory(l.getCondition()) 
     or l instanceof RangeBasedForStmt
   )
-  // And it contains a character-write expression
-  and isCharWriteExpr(w) 
+  // And the loop contains a character-write expression
+  and isMemCharWriteExpr(w) 
   and w.getEnclosingStmt().getParentStmt*() = l.getStmt()
 select l.getLocation().getFile().getBaseName(), l.getLocation().getStartLine(), l, w

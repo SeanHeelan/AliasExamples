@@ -11,6 +11,8 @@
 
 import cpp
 
+import aliashelpers
+
 // Find a loop with a call to vector.size() (or some equivalent) in the condition
 predicate loopConditionAccessesMemory(Expr loopCond) {
   exists(Expr funcCall, Function func, string fname |
@@ -26,66 +28,9 @@ predicate loopConditionAccessesMemory(Expr loopCond) {
   )
 }
 
-predicate isCharWriteExpr(Expr e) {
-  exists(AssignExpr a, Expr lval |
-    a = e.(AssignExpr) and
-    lval = a.getLValue() and
-    lval.getType().stripType() instanceof CharType and
-    (
-      lval instanceof PointerDereferenceExpr or
-      lval instanceof ArrayExpr or
-      lval instanceof OverloadedArrayExpr
-    )
-  )
-  or
-  exists(PostfixIncrExpr p |
-    p = e.(PostfixIncrExpr) and
-    p.getType().stripType() instanceof CharType and
-    (
-      p.getOperand() instanceof PointerDereferenceExpr or
-      p.getOperand() instanceof ArrayExpr or
-      p.getOperand() instanceof ReferenceDereferenceExpr or
-      p.getOperand() instanceof OverloadedArrayExpr
-    )
-  )
-  or
-  exists(PostfixDecrExpr p |
-    p = e.(PostfixDecrExpr) and
-    p.getType().stripType() instanceof CharType and
-    (
-      p.getOperand() instanceof PointerDereferenceExpr or
-      p.getOperand() instanceof ArrayExpr or
-      p.getOperand() instanceof ReferenceDereferenceExpr or
-      p.getOperand() instanceof OverloadedArrayExpr
-    )
-  )
-  or
-  exists(PrefixIncrExpr p |
-    p = e.(PrefixIncrExpr) and
-    p.getType().stripType() instanceof CharType and
-    (
-      p.getOperand() instanceof PointerDereferenceExpr or
-      p.getOperand() instanceof ArrayExpr or
-      p.getOperand() instanceof ReferenceDereferenceExpr or
-      p.getOperand() instanceof OverloadedArrayExpr
-    )
-  )
-  or
-  exists(PrefixDecrExpr p |
-    p = e.(PrefixDecrExpr) and
-    p.getType().stripType() instanceof CharType and
-    (
-      p.getOperand() instanceof PointerDereferenceExpr or
-      p.getOperand() instanceof ArrayExpr or
-      p.getOperand() instanceof ReferenceDereferenceExpr or
-      p.getOperand() instanceof OverloadedArrayExpr
-    )
-  )
-}
-
 from Loop l, Expr w
 where
   (loopConditionAccessesMemory(l.getCondition()) or l instanceof RangeBasedForStmt) and
-  isCharWriteExpr(w) and
+  isMemCharWriteExpr(w) and
   w.getEnclosingStmt().getParentStmt*() = l.getStmt()
 select l.getLocation().getFile().getBaseName(), l, w, "Found ..."

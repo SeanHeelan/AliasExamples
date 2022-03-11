@@ -7,24 +7,13 @@
 // And in betwween 1 and 3 X is not modified
 import cpp
 
-predicate isWriteThroughMemDeref(Expr e) {
-    exists(AssignExpr a, Expr lval |
-      a = e.(AssignExpr) and
-      lval = a.getLValue() and
-      lval.getType().stripType() instanceof CharType and
-      (
-        lval instanceof PointerDereferenceExpr or
-        lval instanceof ArrayExpr or
-        lval instanceof OverloadedArrayExpr
-      )
-    )
-}
+import aliashelpers
 
 from
   Expr w, PointerDereferenceExpr a1, PointerDereferenceExpr a2, Variable accessVar
 where
   (
-    isWriteThroughMemDeref(w) and 
+    isMemCharWriteExpr(w) and 
     a1 = w.getAPredecessor+() and
     w = a2.getAPredecessor+() and
     // We to get the variable holding the base pointer for the accesses. There are a few ways a

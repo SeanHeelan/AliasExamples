@@ -12,29 +12,18 @@
 //    only be a Variable. i.e. this excludes something like 'buf[i]' as a base in 'buf[i][j]'.
 // 3. False positives due to not checking if any subexpressions of the expression that form
 //    the offset or the base (e.g. intel_pm.c#2190 in the kernel) have changed. 
-// 4. False positives due to isWriteThroughMemDeref stripping pointer types and identifying
+// 4. False positives due to isMemCharWriteExpr stripping pointer types and identifying
 //    writes to char* as well as just char types. 
 // 5. False positives due to not checking if the access is an assignment or a read
 import cpp
 
-predicate isWriteThroughMemDeref(Expr e) {
-    exists(AssignExpr a, Expr lval |
-      a = e.(AssignExpr) and
-      lval = a.getLValue() and
-      lval.getType().stripType() instanceof CharType and
-      (
-        lval instanceof PointerDereferenceExpr or
-        lval instanceof ArrayExpr or
-        lval instanceof OverloadedArrayExpr
-      )
-    )
-}
+import aliashelpers
 
 from
   Expr w, ArrayExpr a1, ArrayExpr a2, Variable base, Variable offset
 where
   (
-    isWriteThroughMemDeref(w) 
+    isMemCharWriteExpr(w) 
 
     // Sequence of execution is a1 -> w -> a2
     and a1 = w.getAPredecessor+() 
