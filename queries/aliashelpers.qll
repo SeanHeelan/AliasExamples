@@ -1,3 +1,5 @@
+// Contains predicates shared between two or more queries
+
 import cpp
 
 // Returns true if the expression will involve a write to memory through a 
