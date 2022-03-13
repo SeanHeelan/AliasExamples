@@ -6,15 +6,24 @@
 //
 // And in between 1 and 3 X is not modified
 
-// Known problems:
+// Known False Positives:
 // 1. False positives due to memory references being on the stack
-// 2. False negatives due to the 'base not modified' check limiting base to 
-//    only be a Variable. i.e. this excludes something like 'buf[i]' as a base in 'buf[i][j]'.
-// 3. False positives due to not checking if any subexpressions of the expression that form
+// 2. False positives due to not checking if any subexpressions of the expression that form
 //    the offset or the base (e.g. intel_pm.c#2190 in the kernel) have changed. 
-// 4. False positives due to isMemCharWriteExpr stripping pointer types and identifying
+// 3. False positives due to isMemCharWriteExpr stripping pointer types and identifying
 //    writes to char* as well as just char types. 
-// 5. False positives due to not checking if the access is an assignment or a read
+// 4. False positives due to not checking if the access is an assignment or a read
+// 5. False positives due to function calls occurring between a1 and a2. Some calls, e.g.
+//    inline ones, would be OK, but others, e.g. calls to an extern function, would not. 
+//    The latter cause the compiler to generate a reload from memory. I'm unsure how exactly
+//    the compiler reasons about called functions that are neither inline nor externs, but it
+//    seems that if the function has no writes to memory then it may not cause the compiler
+//    to reload memory contents. If it does have a write to memory then it seems like it 
+//    will cause a reload.
+//
+// Known False Negatives:
+// 1. False negatives due to the 'base not modified' check limiting base to 
+//    only be a Variable. i.e. this excludes something like 'buf[i]' as a base in 'buf[i][j]'.
 import cpp
 
 import aliashelpers

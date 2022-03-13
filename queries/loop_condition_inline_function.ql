@@ -11,7 +11,10 @@
 // Results to check:
 //  * godotengine : basis_universal_unpacker in register_types.cpp appears to have a vectorisable
 //      memset() to 0x0
-
+// 
+// False positives:
+// * We don't eliminate cases where we have a loop condition with a call like `s.size()` and s is 
+//    a local variable. This is pretty common with strings. 
 import cpp
 
 import aliashelpers

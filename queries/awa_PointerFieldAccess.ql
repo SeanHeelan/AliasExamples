@@ -5,7 +5,7 @@
 // 2. Write to memory through a character type
 // 3. Load from memory via variable X
 //
-// And in betwween 1 and 3 X is not modified
+// And in between 1 and 3 X is not modified
 import cpp
 
 import aliashelpers
