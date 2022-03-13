@@ -14,9 +14,9 @@ import cpp
 import aliashelpers
 
 // Find a loop with a call to vector.size() (or some equivalent) in the condition
-predicate loopConditionAccessesMemory(Expr loopCond) {
+predicate loopConditionAccessesMemory(Loop loopCond) {
   exists(Expr funcCall, Function func, string fname |
-    funcCall = loopCond.getAChild() 
+    funcCall = loopCond.getCondition().getAChild() 
     and funcCall instanceof FunctionCall
     and func = funcCall.(FunctionCall).getTarget()
     and func.isInline()
@@ -30,7 +30,7 @@ predicate loopConditionAccessesMemory(Expr loopCond) {
 
 from Loop l, Expr w
 where
-  (loopConditionAccessesMemory(l.getCondition()) or l instanceof RangeBasedForStmt) and
+  (loopConditionAccessesMemory(l) or l instanceof RangeBasedForStmt) and
   isMemCharWriteExpr(w) and
   w.getEnclosingStmt().getParentStmt*() = l.getStmt()
 select l.getLocation().getFile().getBaseName(), l, w, "Found ..."
