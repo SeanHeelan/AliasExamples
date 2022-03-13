@@ -20,7 +20,7 @@ import aliashelpers
 // result in a memory access.
 predicate loopConditionAccessesMemory(Loop l) {
   exists(FunctionCall funcCall, Function func | 
-    funcCall = l.getAChild()
+    funcCall = l.getCondition().getAChild()
     and func = funcCall.getTarget() 
     and func.isInline()
     and allCalleesAreInline(func)
