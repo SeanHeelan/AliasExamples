@@ -1,3 +1,5 @@
+#include <benchmark/benchmark.h>
+
 #include <vector>
 #include <stdint.h>
 #include <string>
