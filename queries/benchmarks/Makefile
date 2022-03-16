@@ -4,4 +4,4 @@ BMARGS=-isystem benchmark/include -Lbenchmark/build/src -lbenchmark -lpthread -l
 OTHER=-std=c++20
 
 all:
-	$(CC) bitcoin_expandhrp.cc $(OPT) $(BMARGS) $(OTHER) -o bitcoin_expandhrp
+	$(CC) bitcoin_expandhrp.cc $(OPT) $(BMARGS) $(OTHER) -o bmprog_bitcoin_expandhrp
