@@ -44,7 +44,7 @@ static void optWrapper(benchmark::State& state) {
   }
 }
 // Register the function as a benchmark
-BENCHMARK(optWrapper)->RangeMultiplier(2)->Range(8, 8<<10);
+BENCHMARK(optWrapper)->RangeMultiplier(2)->Range(8, 8<<12);
 
 static void origWrapper(benchmark::State& state) {
   // Code inside this loop is measured repeatedly
@@ -55,4 +55,4 @@ static void origWrapper(benchmark::State& state) {
   }
 }
 // Register the function as a benchmark
-BENCHMARK(origWrapper)->RangeMultiplier(2)->Range(8, 8<<10);
+BENCHMARK(origWrapper)->RangeMultiplier(2)->Range(8, 8<<12);
