@@ -1,0 +1,3 @@
+[submodule "queries/benchmarks/google_benchmark_plot"]
+	path = queries/benchmarks/google_benchmark_plot
+	url = https://github.com/SeanHeelan/google_benchmark_plot
