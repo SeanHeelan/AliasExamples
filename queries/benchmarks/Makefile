@@ -14,3 +14,9 @@ bitcoin_SwapBase64:
 	python google_benchmark_plot/plot.py -f results.csv --title "Bitcoin SwapBase64" --ylabel "time (ns)" --output bitcoin_SwapBase64.png
 
 all: bitcoin_ExpandHRP bitcoin_SwapBase64
+
+clean:
+	rm -f *.png
+	rm -f results.csv
+	rm -f bitcoin_ExpandHRP
+	rm -f bitcoin_SwapBase64
