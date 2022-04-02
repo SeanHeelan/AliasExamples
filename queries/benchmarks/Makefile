@@ -13,10 +13,14 @@ bitcoin_SwapBase64:
 	./bmprog_bitcoin_swapbase64 --benchmark_format=csv > results.csv
 	python google_benchmark_plot/plot.py -f results.csv --title "Bitcoin SwapBase64" --ylabel "time (ns)" --output bitcoin_SwapBase64.png
 
-all: bitcoin_ExpandHRP bitcoin_SwapBase64
+bitcoin_CSubNet:
+	$(CC) bitcoin_CSubNet.cc $(OPT) $(BMARGS) $(OTHER) -o bmprog_bitcoin_csubnet
+
+all: bitcoin_ExpandHRP bitcoin_SwapBase64 bitcoin_CSubNet
 
 clean:
 	rm -f *.png
 	rm -f results.csv
-	rm -f bitcoin_ExpandHRP
-	rm -f bitcoin_SwapBase64
+	rm -f bmprog_bitcoin_expandhrp
+	rm -f bmprog_bitcoin_swapbase64
+	rm -f bmprog_bitcoin_csubnet
