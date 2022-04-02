@@ -36,23 +36,25 @@ data2 opt_ExpandHRP(const std::string& hrp)
 }
 
 static void optimised(benchmark::State& state) {
+  auto s = std::string(state.range(0), 'A');
   // Code inside this loop is measured repeatedly
   for (auto _ : state) {
-    auto created_string = opt_ExpandHRP(std::string(state.range(0), 'A'));
+    auto created_string = opt_ExpandHRP(s);
     // Make sure the variable is not optimized away by compiler
     benchmark::DoNotOptimize(created_string);
   }
 }
 // Register the function as a benchmark
-BENCHMARK(optimised)->RangeMultiplier(2)->Range(8, 8<<12);
+BENCHMARK(optimised)->RangeMultiplier(2)->Range(8, 8<<15);
 
 static void original(benchmark::State& state) {
+  auto s = std::string(state.range(0), 'A');
   // Code inside this loop is measured repeatedly
   for (auto _ : state) {
-    auto created_string = orig_ExpandHRP(std::string(state.range(0), 'A'));
+    auto created_string = orig_ExpandHRP(s);
     // Make sure the variable is not optimized away by compiler
     benchmark::DoNotOptimize(created_string);
   }
 }
 // Register the function as a benchmark
-BENCHMARK(original)->RangeMultiplier(2)->Range(8, 8<<12);
+BENCHMARK(original)->RangeMultiplier(2)->Range(8, 8<<15);

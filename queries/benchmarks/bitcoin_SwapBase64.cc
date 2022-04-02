@@ -83,9 +83,10 @@ std::u8string opt_SwapBase64(const std::u8string& from)
 }
 
 static void optimised(benchmark::State& state) {
+  auto s = std::u8string(state.range(0), 'A');
   // Code inside this loop is measured repeatedly
   for (auto _ : state) {
-    auto r = opt_SwapBase64(std::u8string(state.range(0), 'A'));
+    auto r = opt_SwapBase64(s);
     // Make sure the variable is not optimized away by compiler
     benchmark::DoNotOptimize(r);
   }
@@ -94,9 +95,10 @@ static void optimised(benchmark::State& state) {
 BENCHMARK(optimised)->RangeMultiplier(2)->Range(8, 8<<21);
 
 static void original(benchmark::State& state) {
+  auto s = std::string(state.range(0), 'A');
   // Code inside this loop is measured repeatedly
   for (auto _ : state) {
-    auto r = orig_SwapBase64(std::string(state.range(0), 'A'));
+    auto r = orig_SwapBase64(s);
     // Make sure the variable is not optimized away by compiler
     benchmark::DoNotOptimize(r);
   }
@@ -105,9 +107,10 @@ static void original(benchmark::State& state) {
 BENCHMARK(original)->RangeMultiplier(2)->Range(8, 8<<21);
 
 static void original_vec(benchmark::State& state) {
+  auto s = std::string(state.range(0), 'A');
   // Code inside this loop is measured repeatedly
   for (auto _ : state) {
-    auto r = orig_vec(std::string(state.range(0), 'A'));
+    auto r = orig_vec(s);
     // Make sure the variable is not optimized away by compiler
     benchmark::DoNotOptimize(r);
   }
