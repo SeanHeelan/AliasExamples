@@ -9,7 +9,7 @@ bitcoin_ExpandHRP:
 	python google_benchmark_plot/plot.py -f results.csv --title "Bitcoin ExpandHRP" --ylabel "time (ns)" --output bitcoin_ExpandHRP.png
 
 bitcoin_SwapBase64:
-	$(CC) bitcoin_SwapBase64.cc $(OPT) $(BMARGS) $(OTHER) -o bmprog_bitcoin_swapbase64
+	$(CC) bitcoin_SwapBase64.cc $(OPT) $(BMARGS) $(OTHER) -mbranches-within-32B-boundaries -o bmprog_bitcoin_swapbase64
 	./bmprog_bitcoin_swapbase64 --benchmark_format=csv > results.csv
 	python google_benchmark_plot/plot.py -f results.csv --title "Bitcoin SwapBase64" --ylabel "time (ns)" --output bitcoin_SwapBase64.png
 
