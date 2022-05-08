@@ -19,40 +19,6 @@ import cpp
 
 import aliashelpers
 
-// Returns true if the loop condition contains a function call that we think will 
-// result in a memory access.
-predicate loopConditionAccessesMemory(Loop l) {
-  exists(FunctionCall funcCall, Function func | 
-    funcCall = l.getCondition().getAChild()
-    and func = funcCall.getTarget() 
-    and func.isInline()
-    and allCalleesAreInline(func)
-    and hasMemoryAccess(func)
-  )
-}
-
-// Recursive predicate. Returns true if this function, or any function it calls, 
-// contains an expression that we think will result in a memory access.
-predicate hasMemoryAccess(Function func) {
-  // The function contains either a PointerFieldAccess (e.g. this->x) or an 
-  // implicit access via the this pointer
-  exists (PointerFieldAccess pfa | pfa.getEnclosingFunction() = func)
-  or exists (ImplicitThisFieldAccess itfa | itfa.getEnclosingFunction() = func)
-  // Or, it calls a function that meets the above properties
-  or exists (Function called | 
-    called.getACallToThisFunction().getEnclosingFunction() = func
-    and hasMemoryAccess(called))
-}
-
-// Recursive predicate. Returns true if all functions called from this function 
-// are inline, as are their callees, and so on.
-predicate allCalleesAreInline(Function func) { 
-  not exists (Function called | 
-    (not called.isInline() or not allCalleesAreInline(called)) 
-    and called.getACallToThisFunction().getEnclosingFunction() = func
-  )
-}
-
 from Loop l, Expr w
 where
   // The loop condition accesses memory in some way
