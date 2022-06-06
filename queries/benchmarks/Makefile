@@ -16,7 +16,12 @@ bitcoin_SwapBase64:
 bitcoin_CSubNet:
 	$(CC) bitcoin_CSubNet.cc $(OPT) $(BMARGS) $(OTHER) -o bmprog_bitcoin_csubnet
 
-all: bitcoin_ExpandHRP bitcoin_SwapBase64 bitcoin_CSubNet
+monero_bulletproof_PROVE:
+	g++ monero_bulletproof_PROVE.cc $(OPT) $(BMARGS) $(OTHER) -o bmprog_monero_bulletproof_PROVE
+	./bmprog_monero_bulletproof_PROVE --benchmark_format=csv > results.csv
+	python google_benchmark_plot/plot.py -f results.csv --title "Monero bulletproof_PROVE" --ylabel "time (ns)" --output monero_bulletproof_PROVE.png
+
+all: bitcoin_ExpandHRP bitcoin_SwapBase64 bitcoin_CSubNet monero_bulletproof_PROVE
 
 clean:
 	rm -f *.png
@@ -24,3 +29,4 @@ clean:
 	rm -f bmprog_bitcoin_expandhrp
 	rm -f bmprog_bitcoin_swapbase64
 	rm -f bmprog_bitcoin_csubnet
+	rm -f bmprog_monero_bulletproof_PROVE
